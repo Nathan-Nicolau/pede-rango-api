@@ -21,8 +21,8 @@ WHERE u.email = 'entregador@fooddelivery.com'
   AND NOT EXISTS (SELECT 1 FROM entregadores e WHERE e.usuario_id = u.id);
 
 -- 3. Inserir Pedido de Exemplo
-INSERT INTO pedidos (nome_cliente, endereco_entrega, status, entregador_id, valor_total, criado_em, atualizado_em)
-SELECT 'Carlos Cliente', 'Rua das Flores, 123 - Centro', 'RECEBIDO', NULL, 45.90, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+INSERT INTO pedidos (codigo, nome_cliente, endereco_entrega, status, entregador_id, valor_total, criado_em, atualizado_em)
+SELECT 'PED-20260801-0001', 'Carlos Cliente', 'Rua das Flores, 123 - Centro', 'RECEBIDO', NULL, 45.90, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM pedidos WHERE nome_cliente = 'Carlos Cliente' AND status = 'RECEBIDO');
 
 -- 4. Inserir Itens do Pedido de Exemplo

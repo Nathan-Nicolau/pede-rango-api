@@ -13,6 +13,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 @Entity
 @Table(name = "pedidos")
 @Getter
@@ -25,6 +28,9 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "codigo", nullable = false, unique = true, updatable = false, length = 30)
+    private String codigo;
 
     @Column(name = "nome_cliente", nullable = false)
     private String nomeCliente;
@@ -62,6 +68,12 @@ public class Pedido {
         if (this.status == null) {
             this.status = StatusPedido.RECEBIDO;
         }
+    }
+
+    public void gerarCodigoSequencial(long sequencia) {
+        String dataStr = (this.criadoEm != null ? this.criadoEm : LocalDateTime.now())
+            .format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        this.codigo = String.format("PED-%s-%04d", dataStr, sequencia);
     }
 
     @PreUpdate
