@@ -1,0 +1,28 @@
+package com.nathannicolau.fooddeliveryapi.repository;
+
+import com.nathannicolau.fooddeliveryapi.domain.usuario.PerfilUsuario;
+import com.nathannicolau.fooddeliveryapi.domain.usuario.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    // 1. Buscar usuário pelo email único (Autenticação / Login)
+    Optional<Usuario> findByEmail(String email);
+
+    // 2. Verificar existência por email (Registro de Novos Usuários)
+    boolean existsByEmail(String email);
+
+    // 3. Listar usuários ATIVOS por Perfil (CLIENTE, ENTREGADOR, RESTAURANTE, ADMIN)
+    List<Usuario> findByPerfilAndAtivoTrue(PerfilUsuario perfil);
+
+    // 4. Listar todos os usuários ATIVOS
+    List<Usuario> findByAtivoTrue();
+
+    // 5. Buscar usuários por parte do nome (Filtro / Busca de clientes ou colaboradores)
+    List<Usuario> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome);
+}
