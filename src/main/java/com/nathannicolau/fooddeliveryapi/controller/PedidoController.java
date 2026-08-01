@@ -29,7 +29,7 @@ public class PedidoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resposta);
     }
 
-    @GetMapping
+    @GetMapping({"", "/listar-pedidos"})
     public ResponseEntity<List<RespostaPedidoDTO>> listarTodos(
         @RequestParam(required = false) Boolean somenteValidos,
         @RequestParam(required = false) StatusPedido status,
@@ -40,36 +40,36 @@ public class PedidoController {
         return ResponseEntity.ok(pedidos);
     }
 
-    @GetMapping("/{termo}")
-    public ResponseEntity<RespostaPedidoDTO> buscarPorCodigoOuId(@PathVariable String termo) {
-        RespostaPedidoDTO pedido = pedidoService.buscarPorCodigoOuId(termo);
+    @GetMapping("/{codigoOuId}")
+    public ResponseEntity<RespostaPedidoDTO> buscarPorCodigoOuId(@PathVariable String codigoOuId) {
+        RespostaPedidoDTO pedido = pedidoService.buscarPorCodigoOuId(codigoOuId);
         return ResponseEntity.ok(pedido);
     }
 
-    @PatchMapping("/{termo}/status")
+    @PatchMapping("/{codigoOuId}/status")
     public ResponseEntity<RespostaPedidoDTO> atualizarStatus(
-        @PathVariable String termo,
+        @PathVariable String codigoOuId,
         @RequestBody @Valid AtualizarStatusPedidoDTO dto
     ) {
-        RespostaPedidoDTO resposta = pedidoService.atualizarStatus(termo, dto.status());
+        RespostaPedidoDTO resposta = pedidoService.atualizarStatus(codigoOuId, dto.status());
         return ResponseEntity.ok(resposta);
     }
 
-    @PatchMapping("/{termo}/atribuir-entregador/{entregadorId}")
+    @PatchMapping("/{codigoOuId}/atribuir-entregador/{entregadorId}")
     public ResponseEntity<RespostaPedidoDTO> atribuirEntregador(
-        @PathVariable String termo,
+        @PathVariable String codigoOuId,
         @PathVariable Long entregadorId
     ) {
-        RespostaPedidoDTO resposta = pedidoService.atribuirEntregador(termo, entregadorId);
+        RespostaPedidoDTO resposta = pedidoService.atribuirEntregador(codigoOuId, entregadorId);
         return ResponseEntity.ok(resposta);
     }
 
-    @PostMapping("/{termo}/cancelar")
+    @PostMapping("/{codigoOuId}/cancelar")
     public ResponseEntity<RespostaPedidoDTO> cancelarPedido(
-        @PathVariable String termo,
+        @PathVariable String codigoOuId,
         @RequestBody @Valid CancelarPedidoDTO dto
     ) {
-        RespostaPedidoDTO resposta = pedidoService.cancelarPedido(termo, dto);
+        RespostaPedidoDTO resposta = pedidoService.cancelarPedido(codigoOuId, dto);
         return ResponseEntity.ok(resposta);
     }
 }

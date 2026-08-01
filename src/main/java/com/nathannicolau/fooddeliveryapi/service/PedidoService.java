@@ -77,14 +77,14 @@ public class PedidoService {
     }
 
     @Transactional(readOnly = true)
-    public RespostaPedidoDTO buscarPorCodigoOuId(String termo) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO buscarPorCodigoOuId(String codigoOuId) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 
     @Transactional
-    public RespostaPedidoDTO atualizarStatus(String termo, StatusPedido novoStatus) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO atualizarStatus(String codigoOuId, StatusPedido novoStatus) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO) {
             throw new RegraDeNegocioException("Não é possível alterar o status de um pedido já cancelado.");
@@ -99,8 +99,8 @@ public class PedidoService {
     }
 
     @Transactional
-    public RespostaPedidoDTO atribuirEntregador(String termo, Long entregadorId) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO atribuirEntregador(String codigoOuId, Long entregadorId) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO || pedido.getStatus() == StatusPedido.ENTREGUE) {
             throw new RegraDeNegocioException("Não é possível atribuir entregador a um pedido finalizado ou cancelado.");
@@ -122,8 +122,8 @@ public class PedidoService {
     }
 
     @Transactional
-    public RespostaPedidoDTO cancelarPedido(String termo, CancelarPedidoDTO dto) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO cancelarPedido(String codigoOuId, CancelarPedidoDTO dto) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO) {
             throw new RegraDeNegocioException("Este pedido já se encontra cancelado.");
@@ -137,17 +137,17 @@ public class PedidoService {
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 
-    private Pedido encontrarPorCodigoOuId(String termo) {
-        // Tenta buscar por código
-        return pedidoRepository.findByCodigo(termo)
+    private Pedido encontrarPorCodigoOuId(String codigoOuId) {
+        // Tenta buscar por código (ex: PED-20260801-0001)
+        return pedidoRepository.findByCodigo(codigoOuId)
             .orElseGet(() -> {
-                // Se o termo for um ID numérico, tenta buscar por ID
+                // Se for um ID numérico, tenta buscar por ID
                 try {
-                    Long id = Long.parseLong(termo);
+                    Long id = Long.parseLong(codigoOuId);
                     return pedidoRepository.findById(id)
-                        .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado com o identificador: " + termo));
+                        .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado com o identificador/código: " + codigoOuId));
                 } catch (NumberFormatException e) {
-                    throw new RegraDeNegocioException("Pedido não encontrado com o código: " + termo);
+                    throw new RegraDeNegocioException("Pedido não encontrado com o código: " + codigoOuId);
                 }
             });
     }
