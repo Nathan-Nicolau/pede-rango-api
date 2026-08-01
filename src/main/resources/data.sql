@@ -1,16 +1,16 @@
--- Seed de Dados Iniciais para Teste em Português
+-- Seed de Dados Iniciais para Teste em Português (Senha padrão para todos os usuários do seed: 123456)
 
 -- 1. Inserir Usuários Iniciais
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
-SELECT 'Administrador do Sistema', 'admin@fooddelivery.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ADMIN', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+SELECT 'Administrador do Sistema', 'admin@fooddelivery.com', '123456', 'ADMIN', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'admin@fooddelivery.com');
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
-SELECT 'Carlos Cliente', 'cliente@fooddelivery.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'CLIENTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+SELECT 'Carlos Cliente', 'cliente@fooddelivery.com', '123456', 'CLIENTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'cliente@fooddelivery.com');
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
-SELECT 'João Entregador', 'entregador@fooddelivery.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'ENTREGADOR', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+SELECT 'João Entregador', 'entregador@fooddelivery.com', '123456', 'ENTREGADOR', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'entregador@fooddelivery.com');
 
 -- 2. Inserir Entregador vinculado ao usuário de email 'entregador@fooddelivery.com'
