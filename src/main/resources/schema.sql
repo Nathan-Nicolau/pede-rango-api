@@ -1,0 +1,55 @@
+-- Script de Inicialização do Banco de Dados PostgreSQL em Português
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    perfil VARCHAR(50) NOT NULL DEFAULT 'CLIENTE' CHECK (perfil IN ('CLIENTE', 'ENTREGADOR', 'RESTAURANTE', 'ADMIN')),
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS entregadores (
+    id BIGSERIAL PRIMARY KEY,
+    usuario_id BIGINT NOT NULL UNIQUE,
+    telefone VARCHAR(50) NOT NULL,
+    veiculo VARCHAR(100) NOT NULL,
+    placa VARCHAR(20),
+    disponivel BOOLEAN NOT NULL DEFAULT TRUE,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS pedidos (
+    id BIGSERIAL PRIMARY KEY,
+    nome_cliente VARCHAR(255) NOT NULL,
+    endereco_entrega VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('RECEBIDO', 'EM_PREPARO', 'SAIU_PARA_ENTREGA', 'ENTREGUE', 'CANCELADO')),
+    entregador_id BIGINT,
+    valor_total NUMERIC(38,2) NOT NULL,
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP,
+    FOREIGN KEY (entregador_id) REFERENCES entregadores(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS itens_pedido (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    quantidade INTEGER NOT NULL,
+    preco_unitario NUMERIC(38,2) NOT NULL,
+    pedido_id BIGINT,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cancelamentos_pedido (
+    id BIGSERIAL PRIMARY KEY,
+    pedido_id BIGINT NOT NULL UNIQUE,
+    motivo VARCHAR(100) NOT NULL CHECK (motivo IN ('DESISTENCIA_CLIENTE', 'ENDERECO_NAO_ENCONTRADO', 'FALTA_DE_ESTOQUE', 'ATRASO_NA_ENTREGA', 'OUTRO')),
+    observacoes TEXT,
+    cancelado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
+);
