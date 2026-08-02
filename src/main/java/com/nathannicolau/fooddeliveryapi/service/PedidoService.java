@@ -176,6 +176,9 @@ public class PedidoService {
         }
 
         pedido.setStatus(novoStatus);
+        if (novoStatus == StatusPedido.ENTREGUE && pedido.getDataEntrega() == null) {
+            pedido.setDataEntrega(LocalDateTime.now());
+        }
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Entity
 @Table(name = "pedidos")
@@ -63,6 +62,9 @@ public class Pedido {
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
+    @Column(name = "data_entrega")
+    private LocalDateTime dataEntrega;
+
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
@@ -84,6 +86,9 @@ public class Pedido {
     @PreUpdate
     protected void aoAtualizar() {
         this.atualizadoEm = LocalDateTime.now();
+        if (this.status == StatusPedido.ENTREGUE && this.dataEntrega == null) {
+            this.dataEntrega = LocalDateTime.now();
+        }
     }
 
     public void adicionarItem(ItemPedido item) {

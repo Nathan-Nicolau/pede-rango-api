@@ -20,6 +20,7 @@ public record RespostaPedidoDTO(
     List<RespostaItemPedidoDTO> itens,
     RespostaCancelamentoDTO cancelamento,
     LocalDateTime criadoEm,
+    LocalDateTime dataEntrega,
     LocalDateTime atualizadoEm
 ) {
     public static RespostaPedidoDTO daEntidade(Pedido pedido) {
@@ -52,6 +53,7 @@ public record RespostaPedidoDTO(
             itensDTO,
             RespostaCancelamentoDTO.daEntidade(pedido.getCancelamento()),
             pedido.getCriadoEm(),
+            pedido.getDataEntrega(),
             pedido.getAtualizadoEm()
         );
     }
