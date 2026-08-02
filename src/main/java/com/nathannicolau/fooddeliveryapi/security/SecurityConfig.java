@@ -36,9 +36,10 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Permite sem autenticação os endpoints de login, cadastro de usuário e documentação Swagger
+                // Permite sem autenticação os endpoints de login, cadastro de usuário, documentação Swagger e Actuator
                 .requestMatchers("/auth/login", "/auth/register", "/auth/registrar").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 // Permite requisições pre-flight de CORS do navegador
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // TODOS os demais endpoints (pedidos, entregadores, etc.) exigem autenticação via Token JWT

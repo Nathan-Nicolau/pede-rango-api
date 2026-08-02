@@ -23,6 +23,15 @@ spring:
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
 springdoc:
   api-docs:
     path: /v3/api-docs
