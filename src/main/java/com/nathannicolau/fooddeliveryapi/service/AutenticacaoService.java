@@ -51,8 +51,8 @@ public class AutenticacaoService {
             throw new RegraDeNegocioException("A conta de usuário informada está inativa.");
         }
 
-        // Valida senha criptografada via BCrypt ou fallback para texto limpo se for dado legado do seed
-        boolean senhaValida = passwordEncoder.matches(dto.senha(), usuario.getSenha()) || usuario.getSenha().equals(dto.senha());
+        // Valida senha criptografada via BCrypt
+        boolean senhaValida = passwordEncoder.matches(dto.senha(), usuario.getSenha());
 
         if (!senhaValida) {
             throw new RegraDeNegocioException("Credenciais inválidas: e-mail ou senha incorretos.");

@@ -2,6 +2,8 @@ package com.nathannicolau.fooddeliveryapi.repository;
 
 import com.nathannicolau.fooddeliveryapi.domain.pedido.Pedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,7 +40,27 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     // 6. Listar pedidos associados a um entregador
     List<Pedido> findByEntregadorIdOrderByCriadoEmDesc(Long entregadorId);
 
-    // 7. Consulta JPQL Personalizada combinada (Dashboard / Relatórios)
+    // 7. Listar pedidos associados a um cliente (meus pedidos web)
+    List<Pedido> findByClienteIdOrderByCriadoEmDesc(Long clienteId);
+    Page<Pedido> findByClienteIdOrderByCriadoEmDesc(Long clienteId, Pageable pageable);
+    Page<Pedido> findByClienteUsuarioEmailOrderByCriadoEmDesc(String email, Pageable pageable);
+
+    // 8. Consulta JPQL Personalizada Combinada Paginada (Dashboard / Relatórios)
+    @Query("""
+        SELECT p FROM Pedido p
+        WHERE (:somenteValidos = false OR p.status <> com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido.CANCELADO)
+          AND (:status IS NULL OR p.status = :status)
+          AND (CAST(:inicio AS timestamp) IS NULL OR p.criadoEm >= :inicio)
+          AND (CAST(:fim AS timestamp) IS NULL OR p.criadoEm <= :fim)
+        """)
+    Page<Pedido> buscarComFiltrosAvancadosPaginado(
+        @Param("somenteValidos") Boolean somenteValidos,
+        @Param("status") StatusPedido status,
+        @Param("inicio") LocalDateTime inicio,
+        @Param("fim") LocalDateTime fim,
+        Pageable pageable
+    );
+
     @Query("""
         SELECT p FROM Pedido p
         WHERE (:somenteValidos = false OR p.status <> com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido.CANCELADO)

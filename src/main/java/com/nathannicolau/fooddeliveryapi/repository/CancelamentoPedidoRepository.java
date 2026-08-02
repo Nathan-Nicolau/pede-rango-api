@@ -2,6 +2,8 @@ package com.nathannicolau.fooddeliveryapi.repository;
 
 import com.nathannicolau.fooddeliveryapi.domain.pedido.CancelamentoPedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.MotivoCancelamento;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,12 +17,17 @@ public interface CancelamentoPedidoRepository extends JpaRepository<Cancelamento
     // 1. Buscar o cancelamento associado ao ID interno do pedido
     Optional<CancelamentoPedido> findByPedidoId(Long pedidoId);
 
-    // 2. Buscar o cancelamento associado ao código externo (UUID/PED-...) do pedido
+    // 2. Buscar o cancelamento associado ao código externo (PED-...) do pedido
     Optional<CancelamentoPedido> findByPedidoCodigo(String codigo);
 
-    // 3. Relatório: Listar todos os cancelamentos por um motivo específico (ex: DESISTENCIA_CLIENTE, FALTA_DE_ESTOQUE)
+    // 3. Relatório: Listar todos os cancelamentos por motivo (Paginado)
     List<CancelamentoPedido> findByMotivoOrderByCanceladoEmDesc(MotivoCancelamento motivo);
+    Page<CancelamentoPedido> findByMotivoOrderByCanceladoEmDesc(MotivoCancelamento motivo, Pageable pageable);
 
-    // 4. Relatório: Listar cancelamentos ocorridos dentro de um período de tempo
+    // 4. Relatório: Listar cancelamentos ocorridos dentro de um período de tempo (Paginado)
     List<CancelamentoPedido> findByCanceladoEmBetweenOrderByCanceladoEmDesc(LocalDateTime inicio, LocalDateTime fim);
+    Page<CancelamentoPedido> findByCanceladoEmBetweenOrderByCanceladoEmDesc(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
+
+    // 5. Listar todos os cancelamentos paginados
+    Page<CancelamentoPedido> findAllByOrderByCanceladoEmDesc(Pageable pageable);
 }

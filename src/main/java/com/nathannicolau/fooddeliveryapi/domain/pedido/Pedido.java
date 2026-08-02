@@ -1,5 +1,6 @@
 package com.nathannicolau.fooddeliveryapi.domain.pedido;
 
+import com.nathannicolau.fooddeliveryapi.domain.cliente.Cliente;
 import com.nathannicolau.fooddeliveryapi.domain.entregador.Entregador;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,10 @@ public class Pedido {
 
     @Column(name = "codigo", nullable = false, unique = true, updatable = false, length = 30)
     private String codigo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 
     @Column(name = "nome_cliente", nullable = false)
     private String nomeCliente;

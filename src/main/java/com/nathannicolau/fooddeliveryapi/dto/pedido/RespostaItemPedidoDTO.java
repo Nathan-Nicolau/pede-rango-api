@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 public record RespostaItemPedidoDTO(
     Long id,
+    Long produtoId,
     String nome,
     Integer quantidade,
     BigDecimal precoUnitario,
@@ -16,8 +17,11 @@ public record RespostaItemPedidoDTO(
             ? item.getPrecoUnitario().multiply(BigDecimal.valueOf(item.getQuantidade()))
             : BigDecimal.ZERO;
 
+        Long produtoId = item.getProduto() != null ? item.getProduto().getId() : null;
+
         return new RespostaItemPedidoDTO(
             item.getId(),
+            produtoId,
             item.getNome(),
             item.getQuantidade(),
             item.getPrecoUnitario(),

@@ -10,6 +10,7 @@ import java.util.List;
 public record RespostaPedidoDTO(
     Long id,
     String codigo,
+    Long clienteId,
     String nomeCliente,
     String enderecoEntrega,
     StatusPedido status,
@@ -34,9 +35,14 @@ public record RespostaPedidoDTO(
             ? pedido.getEntregador().getId()
             : null;
 
+        Long clienteId = pedido.getCliente() != null
+            ? pedido.getCliente().getId()
+            : null;
+
         return new RespostaPedidoDTO(
             pedido.getId(),
             pedido.getCodigo(),
+            clienteId,
             pedido.getNomeCliente(),
             pedido.getEnderecoEntrega(),
             pedido.getStatus(),
