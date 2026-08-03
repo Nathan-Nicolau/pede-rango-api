@@ -63,3 +63,18 @@ FROM pedidos p
 JOIN produtos pr ON pr.nome = 'Refrigerante Guaraná 2L'
 WHERE p.codigo = 'PED-20260801-0001'
   AND NOT EXISTS (SELECT 1 FROM itens_pedido i WHERE i.pedido_id = p.id AND i.nome = 'Refrigerante Guaraná 2L');
+
+-- 7. Criar registro na tabela 'clientes' para qualquer usuário com perfil CLIENTE que não possua registro correspondente (ex: usuário ID 5)
+INSERT INTO clientes (usuario_id, ativo, criado_em, atualizado_em)
+SELECT u.id, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+FROM usuarios u
+WHERE u.perfil = 'CLIENTE'
+  AND NOT EXISTS (SELECT 1 FROM clientes c WHERE c.usuario_id = u.id);
+
+-- 8. Vincular pedidos sem cliente_id aos respectivos registros da tabela clientes com base no nome do cliente
+UPDATE pedidos p
+SET cliente_id = c.id
+FROM clientes c
+JOIN usuarios u ON c.usuario_id = u.id
+WHERE p.cliente_id IS NULL
+  AND LOWER(TRIM(p.nome_cliente)) = LOWER(TRIM(u.nome));
