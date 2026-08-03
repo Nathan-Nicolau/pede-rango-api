@@ -10,6 +10,7 @@ import java.util.List;
 public record RespostaPedidoDTO(
     Long id,
     String codigo,
+    Long clienteId,
     String nomeCliente,
     String enderecoEntrega,
     StatusPedido status,
@@ -19,6 +20,7 @@ public record RespostaPedidoDTO(
     List<RespostaItemPedidoDTO> itens,
     RespostaCancelamentoDTO cancelamento,
     LocalDateTime criadoEm,
+    LocalDateTime dataEntrega,
     LocalDateTime atualizadoEm
 ) {
     public static RespostaPedidoDTO daEntidade(Pedido pedido) {
@@ -34,9 +36,14 @@ public record RespostaPedidoDTO(
             ? pedido.getEntregador().getId()
             : null;
 
+        Long clienteId = pedido.getCliente() != null
+            ? pedido.getCliente().getId()
+            : null;
+
         return new RespostaPedidoDTO(
             pedido.getId(),
             pedido.getCodigo(),
+            clienteId,
             pedido.getNomeCliente(),
             pedido.getEnderecoEntrega(),
             pedido.getStatus(),
@@ -46,6 +53,7 @@ public record RespostaPedidoDTO(
             itensDTO,
             RespostaCancelamentoDTO.daEntidade(pedido.getCancelamento()),
             pedido.getCriadoEm(),
+            pedido.getDataEntrega(),
             pedido.getAtualizadoEm()
         );
     }

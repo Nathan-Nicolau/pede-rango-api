@@ -4,6 +4,10 @@ import com.nathannicolau.fooddeliveryapi.dto.entregador.CriarEntregadorDTO;
 import com.nathannicolau.fooddeliveryapi.dto.entregador.RespostaEntregadorDTO;
 import com.nathannicolau.fooddeliveryapi.service.EntregadorService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +32,10 @@ public class EntregadorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RespostaEntregadorDTO>> listarTodos() {
-        List<RespostaEntregadorDTO> entregadores = entregadorService.listarTodos();
+    public ResponseEntity<Page<RespostaEntregadorDTO>> listarTodos(
+        @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        Page<RespostaEntregadorDTO> entregadores = entregadorService.listarTodosPaginado(pageable);
         return ResponseEntity.ok(entregadores);
     }
 
@@ -51,6 +57,21 @@ public class EntregadorController {
         @RequestParam boolean disponivel
     ) {
         RespostaEntregadorDTO resposta = entregadorService.alternarDisponibilidade(id, disponivel);
+        return ResponseEntity.ok(resposta);
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<RespostaEntregadorDTO> buscarPorEmail(@PathVariable String email) {
+        RespostaEntregadorDTO entregador = entregadorService.buscarPorEmail(email);
+        return ResponseEntity.ok(entregador);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RespostaEntregadorDTO> atualizarTelefone(
+        @PathVariable Long id,
+        @RequestParam String telefone
+    ) {
+        RespostaEntregadorDTO resposta = entregadorService.atualizarTelefone(id, telefone);
         return ResponseEntity.ok(resposta);
     }
 }
