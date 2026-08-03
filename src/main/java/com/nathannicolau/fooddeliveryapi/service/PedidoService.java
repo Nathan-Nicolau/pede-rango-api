@@ -52,10 +52,16 @@ public class PedidoService {
 
         Pedido pedido = new Pedido();
 
-        // 1. Tenta associar Cliente cadastrado se ID informado
+        // 1. Tenta associar Cliente cadastrado por ID ou nome/e-mail
         if (dto.clienteId() != null) {
             Cliente cliente = clienteRepository.findById(dto.clienteId())
                 .orElse(null);
+            pedido.setCliente(cliente);
+        } else if (dto.nomeCliente() != null && !dto.nomeCliente().isBlank()) {
+            Cliente cliente = clienteRepository.findByUsuarioEmail(dto.nomeCliente())
+                .orElseGet(() -> clienteRepository.findAll().stream()
+                    .filter(c -> c.getUsuario() != null && c.getUsuario().getNome().equalsIgnoreCase(dto.nomeCliente().trim()))
+                    .findFirst().orElse(null));
             pedido.setCliente(cliente);
         }
 
