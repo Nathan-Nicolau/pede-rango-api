@@ -8,6 +8,7 @@ import com.nathannicolau.fooddeliveryapi.dto.entregador.RespostaEntregadorDTO;
 import com.nathannicolau.fooddeliveryapi.exception.RegraDeNegocioException;
 import com.nathannicolau.fooddeliveryapi.repository.EntregadorRepository;
 import com.nathannicolau.fooddeliveryapi.repository.UsuarioRepository;
+import com.nathannicolau.fooddeliveryapi.util.FormatoUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,23 +36,26 @@ public class EntregadorService {
 
     @Transactional
     public RespostaEntregadorDTO cadastrar(CriarEntregadorDTO dto) {
+        String emailFormatado = FormatoUtils.formatarEmail(dto.email());
+        String telefoneFormatado = FormatoUtils.formatarTelefone(dto.telefone());
+
         // 1. Validar se o e-mail informado já está em uso
-        if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new RegraDeNegocioException("O e-mail '" + dto.email() + "' já está cadastrado no sistema.");
+        if (usuarioRepository.existsByEmailIgnoreCase(emailFormatado)) {
+            throw new RegraDeNegocioException("O e-mail '" + emailFormatado + "' já está cadastrado no sistema.");
         }
 
         // 2. Criar e salvar o Usuário com credenciais e perfil ENTREGADOR
         String senhaCriptografada = passwordEncoder.encode(dto.senha());
         Usuario novoUsuario = new Usuario(
-            dto.nome(),
-            dto.email(),
+            dto.nome().trim(),
+            emailFormatado,
             senhaCriptografada,
             PerfilUsuario.ENTREGADOR
         );
         Usuario usuarioSalvo = usuarioRepository.save(novoUsuario);
 
         // 3. Criar e salvar o registro operacional de Entregador vinculado ao novo Usuário
-        Entregador entregador = new Entregador(usuarioSalvo, dto.telefone(), dto.veiculo(), dto.placa());
+        Entregador entregador = new Entregador(usuarioSalvo, telefoneFormatado, dto.veiculo(), dto.placa());
         Entregador salvo = entregadorRepository.save(entregador);
 
         return RespostaEntregadorDTO.daEntidade(salvo);
@@ -95,6 +99,25 @@ public class EntregadorService {
         Entregador entregador = entregadorRepository.findById(id)
             .orElseThrow(() -> new RegraDeNegocioException("Entregador não encontrado com ID: " + id));
         entregador.setDisponivel(disponivel);
+        return RespostaEntregadorDTO.daEntidade(entregador);
+    }
+
+    @Transactional(readOnly = true)
+    public RespostaEntregadorDTO buscarPorEmail(String email) {
+        String emailFormatado = FormatoUtils.formatarEmail(email);
+        Entregador entregador = entregadorRepository.findByUsuarioEmail(emailFormatado)
+            .orElseThrow(() -> new RegraDeNegocioException("Entregador não encontrado com e-mail: " + email));
+        return RespostaEntregadorDTO.daEntidade(entregador);
+    }
+
+    @Transactional
+    public RespostaEntregadorDTO atualizarTelefone(Long id, String telefone) {
+        Entregador entregador = entregadorRepository.findById(id)
+            .orElseThrow(() -> new RegraDeNegocioException("Entregador não encontrado com ID: " + id));
+        if (telefone != null && !telefone.isBlank()) {
+            String telefoneFormatado = FormatoUtils.formatarTelefone(telefone);
+            entregador.setTelefone(telefoneFormatado);
+        }
         return RespostaEntregadorDTO.daEntidade(entregador);
     }
 }

@@ -42,4 +42,20 @@ public class ClienteController {
         RespostaClienteDTO cliente = clienteService.buscarPorId(id);
         return ResponseEntity.ok(cliente);
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<RespostaClienteDTO> buscarPorEmail(@PathVariable String email) {
+        RespostaClienteDTO cliente = clienteService.buscarPorEmail(email);
+        return ResponseEntity.ok(cliente);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RespostaClienteDTO> atualizar(
+        @PathVariable Long id,
+        @RequestParam(required = false) String telefone,
+        @RequestParam(required = false) String enderecoPadrao
+    ) {
+        RespostaClienteDTO cliente = clienteService.atualizar(id, telefone, enderecoPadrao);
+        return ResponseEntity.ok(cliente);
+    }
 }

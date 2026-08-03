@@ -4,6 +4,8 @@ import com.nathannicolau.fooddeliveryapi.domain.entregador.Entregador;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +33,8 @@ public interface EntregadorRepository extends JpaRepository<Entregador, Long> {
 
     // 6. Contar quantos entregadores estão online/disponíveis no momento
     long countByDisponivelTrueAndAtivoTrue();
+
+    // 7. Checar telefone normalizado
+    @Query("SELECT COUNT(e) > 0 FROM Entregador e WHERE REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(COALESCE(e.telefone, ''), '(', ''), ')', ''), '-', ''), ' ', ''), '+', '') = :telLimpo")
+    boolean existsByTelefoneNormalizado(@Param("telLimpo") String telLimpo);
 }

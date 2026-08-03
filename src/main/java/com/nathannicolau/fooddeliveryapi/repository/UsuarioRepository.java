@@ -15,9 +15,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // 1. Buscar usuário pelo email único (Autenticação / Login)
     Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmailIgnoreCase(String email);
 
     // 2. Verificar existência por email (Registro de Novos Usuários)
     boolean existsByEmail(String email);
+    boolean existsByEmailIgnoreCase(String email);
 
     // 3. Listar usuários ATIVOS por Perfil (CLIENTE, ENTREGADOR, RESTAURANTE, ADMIN)
     List<Usuario> findByPerfilAndAtivoTrue(PerfilUsuario perfil);

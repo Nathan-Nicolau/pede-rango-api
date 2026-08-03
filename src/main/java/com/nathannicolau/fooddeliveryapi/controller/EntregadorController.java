@@ -59,4 +59,19 @@ public class EntregadorController {
         RespostaEntregadorDTO resposta = entregadorService.alternarDisponibilidade(id, disponivel);
         return ResponseEntity.ok(resposta);
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<RespostaEntregadorDTO> buscarPorEmail(@PathVariable String email) {
+        RespostaEntregadorDTO entregador = entregadorService.buscarPorEmail(email);
+        return ResponseEntity.ok(entregador);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RespostaEntregadorDTO> atualizarTelefone(
+        @PathVariable Long id,
+        @RequestParam String telefone
+    ) {
+        RespostaEntregadorDTO resposta = entregadorService.atualizarTelefone(id, telefone);
+        return ResponseEntity.ok(resposta);
+    }
 }
