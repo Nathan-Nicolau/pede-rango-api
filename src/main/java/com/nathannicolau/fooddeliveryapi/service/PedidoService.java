@@ -4,10 +4,19 @@ import com.nathannicolau.fooddeliveryapi.domain.entregador.Entregador;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.ItemPedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.Pedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido;
-import com.nathannicolau.fooddeliveryapi.dto.pedido.*;
+import com.nathannicolau.fooddeliveryapi.domain.cliente.Cliente;
+import com.nathannicolau.fooddeliveryapi.domain.produto.Produto;
+import com.nathannicolau.fooddeliveryapi.dto.pedido.CancelarPedidoDTO;
+import com.nathannicolau.fooddeliveryapi.dto.pedido.CriarItemPedidoDTO;
+import com.nathannicolau.fooddeliveryapi.dto.pedido.CriarPedidoDTO;
+import com.nathannicolau.fooddeliveryapi.dto.pedido.RespostaPedidoDTO;
 import com.nathannicolau.fooddeliveryapi.exception.RegraDeNegocioException;
+import com.nathannicolau.fooddeliveryapi.repository.ClienteRepository;
 import com.nathannicolau.fooddeliveryapi.repository.EntregadorRepository;
 import com.nathannicolau.fooddeliveryapi.repository.PedidoRepository;
+import com.nathannicolau.fooddeliveryapi.repository.ProdutoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +28,20 @@ import java.util.List;
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
+    private final ClienteRepository clienteRepository;
     private final EntregadorRepository entregadorRepository;
+    private final ProdutoRepository produtoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, EntregadorRepository entregadorRepository) {
+    public PedidoService(
+        PedidoRepository pedidoRepository,
+        ClienteRepository clienteRepository,
+        EntregadorRepository entregadorRepository,
+        ProdutoRepository produtoRepository
+    ) {
         this.pedidoRepository = pedidoRepository;
+        this.clienteRepository = clienteRepository;
         this.entregadorRepository = entregadorRepository;
+        this.produtoRepository = produtoRepository;
     }
 
     @Transactional
@@ -33,21 +51,71 @@ public class PedidoService {
         }
 
         Pedido pedido = new Pedido();
-        pedido.setNomeCliente(dto.nomeCliente());
-        pedido.setEnderecoEntrega(dto.enderecoEntrega());
-        pedido.setStatus(StatusPedido.RECEBIDO);
 
+        // 1. Tenta associar Cliente cadastrado por ID ou nome/e-mail
+        if (dto.clienteId() != null) {
+            Cliente cliente = clienteRepository.findById(dto.clienteId())
+                .orElse(null);
+            pedido.setCliente(cliente);
+        } else if (dto.nomeCliente() != null && !dto.nomeCliente().isBlank()) {
+            Cliente cliente = clienteRepository.findByUsuarioEmail(dto.nomeCliente())
+                .orElseGet(() -> clienteRepository.findAll().stream()
+                    .filter(c -> c.getUsuario() != null && c.getUsuario().getNome().equalsIgnoreCase(dto.nomeCliente().trim()))
+                    .findFirst().orElse(null));
+            pedido.setCliente(cliente);
+        }
+
+        // 2. Definir nome do cliente e endereço de entrega
+        String nomeCliente = (pedido.getCliente() != null && pedido.getCliente().getUsuario() != null)
+            ? pedido.getCliente().getUsuario().getNome()
+            : dto.nomeCliente();
+
+        String enderecoEntrega = (pedido.getCliente() != null && pedido.getCliente().getEnderecoPadrao() != null && !pedido.getCliente().getEnderecoPadrao().isBlank())
+            ? pedido.getCliente().getEnderecoPadrao()
+            : dto.enderecoEntrega();
+
+        if (nomeCliente == null || nomeCliente.isBlank()) {
+            throw new RegraDeNegocioException("O nome do cliente é obrigatório para realizar o pedido.");
+        }
+        if (enderecoEntrega == null || enderecoEntrega.isBlank()) {
+            throw new RegraDeNegocioException("O endereço de entrega é obrigatório.");
+        }
+
+        pedido.setNomeCliente(nomeCliente);
+        pedido.setEnderecoEntrega(enderecoEntrega);
+
+        // 3. Processar itens do pedido
         BigDecimal valorTotal = BigDecimal.ZERO;
-
         for (CriarItemPedidoDTO itemDTO : dto.itens()) {
             ItemPedido item = new ItemPedido();
-            item.setNome(itemDTO.nome());
-            item.setQuantidade(itemDTO.quantidade());
-            item.setPrecoUnitario(itemDTO.precoUnitario());
+            String nomeItem = itemDTO.nome();
+            BigDecimal precoItem = itemDTO.precoUnitario();
+
+            if (itemDTO.produtoId() != null) {
+                Produto produto = produtoRepository.findById(itemDTO.produtoId())
+                    .orElseThrow(() -> new RegraDeNegocioException("Produto não encontrado com ID: " + itemDTO.produtoId()));
+                if (!Boolean.TRUE.equals(produto.getAtivo())) {
+                    throw new RegraDeNegocioException("O produto '" + produto.getNome() + "' está inativo no cardápio.");
+                }
+                item.setProduto(produto);
+                nomeItem = produto.getNome();
+                precoItem = produto.getPreco();
+            }
+
+            if (nomeItem == null || nomeItem.isBlank()) {
+                throw new RegraDeNegocioException("Nome do item do pedido é obrigatório.");
+            }
+            if (precoItem == null) {
+                throw new RegraDeNegocioException("Preço unitário do item é obrigatório.");
+            }
+
+            item.setNome(nomeItem);
+            item.setQuantidade(itemDTO.quantidade() != null ? itemDTO.quantidade() : 1);
+            item.setPrecoUnitario(precoItem);
 
             pedido.adicionarItem(item);
 
-            BigDecimal subtotal = itemDTO.precoUnitario().multiply(BigDecimal.valueOf(itemDTO.quantidade()));
+            BigDecimal subtotal = precoItem.multiply(BigDecimal.valueOf(item.getQuantidade()));
             valorTotal = valorTotal.add(subtotal);
         }
 
@@ -77,14 +145,33 @@ public class PedidoService {
     }
 
     @Transactional(readOnly = true)
-    public RespostaPedidoDTO buscarPorCodigoOuId(String termo) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public Page<RespostaPedidoDTO> listarTodosPaginado(
+        Boolean somenteValidos,
+        StatusPedido status,
+        LocalDateTime inicio,
+        LocalDateTime fim,
+        Pageable pageable
+    ) {
+        boolean apenasValidos = somenteValidos != null && somenteValidos;
+        return pedidoRepository.buscarComFiltrosAvancadosPaginado(apenasValidos, status, inicio, fim, pageable)
+            .map(RespostaPedidoDTO::daEntidade);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<RespostaPedidoDTO> listarPorClientePaginado(String email, Pageable pageable) {
+        return pedidoRepository.findByClienteUsuarioEmailOrderByCriadoEmDesc(email, pageable)
+            .map(RespostaPedidoDTO::daEntidade);
+    }
+
+    @Transactional(readOnly = true)
+    public RespostaPedidoDTO buscarPorCodigoOuId(String codigoOuId) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 
     @Transactional
-    public RespostaPedidoDTO atualizarStatus(String termo, StatusPedido novoStatus) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO atualizarStatus(String codigoOuId, StatusPedido novoStatus) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO) {
             throw new RegraDeNegocioException("Não é possível alterar o status de um pedido já cancelado.");
@@ -95,12 +182,15 @@ public class PedidoService {
         }
 
         pedido.setStatus(novoStatus);
+        if (novoStatus == StatusPedido.ENTREGUE && pedido.getDataEntrega() == null) {
+            pedido.setDataEntrega(LocalDateTime.now());
+        }
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 
     @Transactional
-    public RespostaPedidoDTO atribuirEntregador(String termo, Long entregadorId) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO atribuirEntregador(String codigoOuId, Long entregadorId) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO || pedido.getStatus() == StatusPedido.ENTREGUE) {
             throw new RegraDeNegocioException("Não é possível atribuir entregador a um pedido finalizado ou cancelado.");
@@ -122,8 +212,8 @@ public class PedidoService {
     }
 
     @Transactional
-    public RespostaPedidoDTO cancelarPedido(String termo, CancelarPedidoDTO dto) {
-        Pedido pedido = encontrarPorCodigoOuId(termo);
+    public RespostaPedidoDTO cancelarPedido(String codigoOuId, CancelarPedidoDTO dto) {
+        Pedido pedido = encontrarPorCodigoOuId(codigoOuId);
 
         if (pedido.getStatus() == StatusPedido.CANCELADO) {
             throw new RegraDeNegocioException("Este pedido já se encontra cancelado.");
@@ -133,21 +223,23 @@ public class PedidoService {
             throw new RegraDeNegocioException("Não é possível cancelar um pedido que já foi entregue.");
         }
 
+        if (pedido.getStatus() == StatusPedido.RECEBIDO) {
+            throw new RegraDeNegocioException("Não é possível cancelar um pedido no status RECEBIDO.");
+        }
+
         pedido.cancelar(dto.motivo(), dto.observacoes());
         return RespostaPedidoDTO.daEntidade(pedido);
     }
 
-    private Pedido encontrarPorCodigoOuId(String termo) {
-        // Tenta buscar por código
-        return pedidoRepository.findByCodigo(termo)
+    private Pedido encontrarPorCodigoOuId(String codigoOuId) {
+        return pedidoRepository.findByCodigo(codigoOuId)
             .orElseGet(() -> {
-                // Se o termo for um ID numérico, tenta buscar por ID
                 try {
-                    Long id = Long.parseLong(termo);
+                    Long id = Long.parseLong(codigoOuId);
                     return pedidoRepository.findById(id)
-                        .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado com o identificador: " + termo));
+                        .orElseThrow(() -> new RegraDeNegocioException("Pedido não encontrado com o identificador/código: " + codigoOuId));
                 } catch (NumberFormatException e) {
-                    throw new RegraDeNegocioException("Pedido não encontrado com o código: " + termo);
+                    throw new RegraDeNegocioException("Pedido não encontrado com o código: " + codigoOuId);
                 }
             });
     }

@@ -1,6 +1,7 @@
 package com.nathannicolau.fooddeliveryapi.domain.pedido;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nathannicolau.fooddeliveryapi.domain.produto.Produto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,10 @@ public class ItemPedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
 
     @Column(name = "nome", nullable = false)
     private String nome;

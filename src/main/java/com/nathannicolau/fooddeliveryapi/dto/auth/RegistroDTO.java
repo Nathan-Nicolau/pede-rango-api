@@ -3,7 +3,6 @@ package com.nathannicolau.fooddeliveryapi.dto.auth;
 import com.nathannicolau.fooddeliveryapi.domain.usuario.PerfilUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RegistroDTO(
@@ -18,5 +17,15 @@ public record RegistroDTO(
     @Size(min = 6, message = "A senha deve conter no mínimo 6 caracteres")
     String senha,
 
-    PerfilUsuario perfil
-) {}
+    PerfilUsuario perfil,
+
+    String cpf,
+
+    String telefone,
+
+    String enderecoPadrao
+) {
+    public RegistroDTO(String nome, String email, String senha, PerfilUsuario perfil) {
+        this(nome, email, senha, perfil, null, null, null);
+    }
+}
