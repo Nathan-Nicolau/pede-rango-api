@@ -1,12 +1,15 @@
 package com.nathannicolau.fooddeliveryapi.controller;
 
 import com.nathannicolau.fooddeliveryapi.domain.usuario.PerfilUsuario;
+import com.nathannicolau.fooddeliveryapi.dto.auth.RegistroDTO;
 import com.nathannicolau.fooddeliveryapi.dto.usuario.RespostaUsuarioDTO;
 import com.nathannicolau.fooddeliveryapi.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,5 +42,16 @@ public class UsuarioController {
     public ResponseEntity<RespostaUsuarioDTO> buscarPorId(@PathVariable Long id) {
         RespostaUsuarioDTO usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(usuario);
+    }
+
+    /**
+     * Endpoint exclusivo para administradores criarem usuários com qualquer perfil
+     * (ADMIN, ENTREGADOR, RESTAURANTE). Não passa pela regra do /auth/register
+     * que força o perfil CLIENTE.
+     */
+    @PostMapping
+    public ResponseEntity<RespostaUsuarioDTO> cadastrar(@RequestBody @Valid RegistroDTO dto) {
+        var usuario = usuarioService.cadastrarUsuario(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(RespostaUsuarioDTO.daEntidade(usuario));
     }
 }
