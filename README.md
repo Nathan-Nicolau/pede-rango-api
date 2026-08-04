@@ -43,7 +43,8 @@ Basta executar o comando abaixo na raiz do projeto, para que a API seja compilad
 ```shell
 docker compose up -d --build
 ```
-![Captura de tela de 2026-08-03 22-19-27.png](../../../Imagens/Capturas%20de%20tela/Captura%20de%20tela%20de%202026-08-03%2022-19-27.png)
+
+[containers rodando](imagem.png)
 
 Pode ser rodado somente o projeto da API, mantendo o container do banco de dados, ou utilizar a opção acima
 
