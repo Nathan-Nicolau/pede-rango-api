@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: food-delivery-ingress
+spec:
+  ingressClassName: nginx # Esta linha revive a sua API
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: food-delivery-api-service
+            port:
+              number: {{ .Values.api.port }}

@@ -1,0 +1,19 @@
+# Configurações de Roteamento Externo
+# Configurações da API Spring Boot
+ingress:
+  host: "api.food-delivery.local"
+api:
+  image: "food-delivery-api"
+  tag: "v1"
+  replicas: 1
+  port: 8100
+# Configurações do Banco de Dados PostgreSQL
+database:
+  image: "postgres"
+  tag: "16-alpine"
+  port: 5432
+  
+  # Credenciais e Nomes (que virarão Secrets)
+  dbName: "food_delivery_db"
+  user: "food_user"
+  password: "food_pass"
