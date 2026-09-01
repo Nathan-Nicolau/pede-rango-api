@@ -2,7 +2,7 @@
 # Configurações da API Spring Boot
 # Configuramos aqui vários valores de especificação para o Cluster
 ingress:
-  host: "api.food-delivery.local"
+  host: "api.pede-rango.local"
 api:
   image: "food-delivery-api"
   tag: "v1"

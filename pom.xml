@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.nathannicolau</groupId>
-	<artifactId>food-delivery-api</artifactId>
+	<artifactId>pede-rango-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>food-delivery-api</name>
-	<description>food-delivery-api</description>
+	<name>pede-rango-api</name>
+	<description>pede-rango-api</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
