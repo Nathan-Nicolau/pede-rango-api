@@ -1,6 +1,4 @@
-# Food Delivery API
-
-Esse projeto de API, desenvolvido com Java 21 + Spring Boot, faz parte do teste técnico solicitado
+# Pede Rando API
 
 A API preenche os seguites itens:
 * Cadastro de usuários
