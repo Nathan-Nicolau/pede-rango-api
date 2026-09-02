@@ -12,9 +12,9 @@
 --  ┌──────────────────────────────────┬──────────────────────────────┬─────────────┐
 --  │ Perfil                           │ E-mail                       │ Senha       │
 --  ├──────────────────────────────────┼──────────────────────────────┼─────────────┤
---  │ ADMIN  (acesso total)            │ admin@fooddelivery.com       │ 123456      │
---  │ CLIENTE                          │ cliente@fooddelivery.com     │ 123456      │
---  │ ENTREGADOR                       │ entregador@fooddelivery.com  │ 123456      │
+--  │ ADMIN  (acesso total)            │ admin@pederango.com          │ 123456      │
+--  │ CLIENTE                          │ cliente@pederango.com        │ 123456      │
+--  │ ENTREGADOR                       │ entregador@pederango.com     │ 123456      │
 --  └──────────────────────────────────┴──────────────────────────────┴─────────────┘
 -- =============================================================================
 
@@ -33,9 +33,9 @@ RESTART IDENTITY CASCADE;
 -- Hash BCrypt de '123456': $2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em) VALUES
-    ('Administrador do Sistema',  'admin@fooddelivery.com',      '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ADMIN',      TRUE, NOW(), NOW()),
-    ('Carlos Cliente',            'cliente@fooddelivery.com',    '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'CLIENTE',    TRUE, NOW(), NOW()),
-    ('João Entregador',           'entregador@fooddelivery.com', '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ENTREGADOR', TRUE, NOW(), NOW());
+    ('Administrador do Sistema',  'admin@pederango.com',         '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ADMIN',      TRUE, NOW(), NOW()),
+    ('Carlos Cliente',            'cliente@pederango.com',       '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'CLIENTE',    TRUE, NOW(), NOW()),
+    ('João Entregador',           'entregador@pederango.com',    '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ENTREGADOR', TRUE, NOW(), NOW());
 
 -- ─── 2. PERFIL CLIENTE ────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ SELECT u.id,
        'Rua das Flores, 123 — Centro, São Paulo/SP',
        TRUE, NOW(), NOW()
 FROM usuarios u
-WHERE u.email = 'cliente@fooddelivery.com';
+WHERE u.email = 'cliente@pederango.com';
 
 -- ─── 3. PERFIL ENTREGADOR ─────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ SELECT u.id,
        'ABC-1234',
        TRUE, TRUE, NOW(), NOW()
 FROM usuarios u
-WHERE u.email = 'entregador@fooddelivery.com';
+WHERE u.email = 'entregador@pederango.com';
 
 -- ─── 4. CARDÁPIO DE PRODUTOS ──────────────────────────────────────────────────
 

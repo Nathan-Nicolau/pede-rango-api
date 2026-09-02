@@ -1,5 +1,5 @@
 -- =============================================================================
--- Seed de Dados Iniciais — Food Delivery API
+-- Seed de Dados Iniciais — Pede Rango API
 -- Senha padrão para todos os usuários: 123456
 -- Hash BCrypt de '123456': $2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm
 -- =============================================================================
@@ -8,24 +8,24 @@
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
 SELECT 'Administrador do Sistema',
-       'admin@fooddelivery.com',
+       'admin@pederango.com',
        '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm',
        'ADMIN', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'admin@fooddelivery.com');
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'admin@pederango.com');
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
 SELECT 'Carlos Cliente',
-       'cliente@fooddelivery.com',
+       'cliente@pederango.com',
        '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm',
        'CLIENTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'cliente@fooddelivery.com');
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'cliente@pederango.com');
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
 SELECT 'João Entregador',
-       'entregador@fooddelivery.com',
+       'entregador@pederango.com',
        '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm',
        'ENTREGADOR', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'entregador@fooddelivery.com');
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'entregador@pederango.com');
 
 -- ─── 2. PERFIL CLIENTE ────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ SELECT u.id,
        'Rua das Flores, 123 — Centro, São Paulo/SP',
        TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 FROM usuarios u
-WHERE u.email = 'cliente@fooddelivery.com'
+WHERE u.email = 'cliente@pederango.com'
   AND NOT EXISTS (SELECT 1 FROM clientes c WHERE c.usuario_id = u.id);
 
 -- ─── 3. PERFIL ENTREGADOR ─────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ SELECT u.id,
        'ABC-1234',
        TRUE, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 FROM usuarios u
-WHERE u.email = 'entregador@fooddelivery.com'
+WHERE u.email = 'entregador@pederango.com'
   AND NOT EXISTS (SELECT 1 FROM entregadores e WHERE e.usuario_id = u.id);
 
 -- ─── 4. CARDÁPIO DE PRODUTOS ──────────────────────────────────────────────────
