@@ -3,6 +3,8 @@
 # Configuramos aqui vários valores de especificação para o Cluster
 ingress:
   host: "api.pede-rango.local"
+  additionalHosts:
+    - "api.food-delivery.local"
 api:
   image: "food-delivery-api"
   tag: "v1"

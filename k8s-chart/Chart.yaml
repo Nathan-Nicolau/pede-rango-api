@@ -1,6 +1,6 @@
 apiVersion: v2
-name: k8s-chart
-description: A Helm chart for Kubernetes
+name: pede-rango-api
+description: Helm chart para Pede Rango API (Spring Boot + Postgres)
 
 # A chart can be either an 'application' or a 'library' chart.
 #
