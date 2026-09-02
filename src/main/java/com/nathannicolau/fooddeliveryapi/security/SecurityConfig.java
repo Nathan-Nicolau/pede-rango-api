@@ -67,12 +67,25 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // Ingress configurado com a aplicação em K8s e o localhost para desenvolvimento
         configuration.setAllowedOrigins(List.of(
+                "http://app.pede-rango.local",
+                "http://api.pede-rango.local",
                 "http://app.food-delivery.local",
-                "http://localhost:5173"
+                "http://api.food-delivery.local",
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://localhost",
+                "http://127.0.0.1"
+        ));
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://*.pede-rango.local",
+                "http://*.food-delivery.local",
+                "http://localhost:*",
+                "http://127.0.0.1:*"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
