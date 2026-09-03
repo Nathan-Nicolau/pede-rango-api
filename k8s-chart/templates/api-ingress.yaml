@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: food-delivery-ingress
+  name: pede-rango-api-ingress
 spec:
   ingressClassName: nginx
   rules:
@@ -12,7 +12,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: food-delivery-api-service
+            name: pede-rango-api-service
             port:
               number: {{ .Values.api.port }}
   {{- if .Values.ingress.additionalHosts }}
@@ -24,7 +24,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: food-delivery-api-service
+            name: pede-rango-api-service
             port:
               number: {{ $.Values.api.port }}
   {{- end }}

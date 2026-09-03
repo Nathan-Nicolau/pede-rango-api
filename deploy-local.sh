@@ -14,9 +14,9 @@ NC='\033[0m' # No Color
 
 # Configurações do ambiente
 CLUSTER_NAME="meu-cluster-local"
-RELEASE_NAME="minha-api-delivery-kubernetes"
+RELEASE_NAME="pede-rango-api"
 CHART_DIR="./k8s-chart"
-IMAGE_NAME="food-delivery-api"
+IMAGE_NAME="pede-rango-api"
 DEFAULT_TAG="v1"
 
 # Diretório base do script
@@ -47,18 +47,18 @@ case "$1" in
     ;;
   status)
     echo -e "${BLUE}==> Verificando status da API no cluster Kind...${NC}"
-    kubectl get pods,svc,ingress,hpa,statefulset -l "app in (food-delivery-api, food-delivery-db)"
+    kubectl get pods,svc,ingress,hpa,statefulset -l "app in (pede-rango-api, pede-rango-db)"
     exit 0
     ;;
   logs)
     echo -e "${BLUE}==> Acompanhando logs da API (Ctrl+C para sair)...${NC}"
-    kubectl logs -f -l app=food-delivery-api --all-containers=true --tail=50
+    kubectl logs -f -l app=pede-rango-api --all-containers=true --tail=50
     exit 0
     ;;
   restart)
     echo -e "${BLUE}==> Reiniciando o deployment da API...${NC}"
-    kubectl rollout restart deployment/food-delivery-api
-    kubectl rollout status deployment/food-delivery-api --timeout=120s
+    kubectl rollout restart deployment/pede-rango-api
+    kubectl rollout status deployment/pede-rango-api --timeout=120s
     exit 0
     ;;
   uninstall)
@@ -92,8 +92,8 @@ helm upgrade --install "$RELEASE_NAME" "$CHART_DIR" \
 
 # 4. Verificação de Saúde do Rollout
 echo -e "\n${BLUE}[4/4] Aguardando inicialização completa da API...${NC}"
-kubectl rollout restart deployment/food-delivery-api
-kubectl rollout status deployment/food-delivery-api --timeout=120s
+kubectl rollout restart deployment/pede-rango-api
+kubectl rollout status deployment/pede-rango-api --timeout=120s
 
 echo -e "\n${GREEN}✔ Deploy da API concluído com sucesso!${NC}"
 echo -e "Endpoint local: ${YELLOW}http://api.pede-rango.local${NC}"

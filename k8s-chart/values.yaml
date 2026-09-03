@@ -4,9 +4,9 @@
 ingress:
   host: "api.pede-rango.local"
   additionalHosts:
-    - "api.food-delivery.local"
+    - "api.192.168.3.27.nip.io"
 api:
-  image: "food-delivery-api"
+  image: "pede-rango-api"
   tag: "v1"
   replicas: 1
   port: 8100
@@ -56,6 +56,6 @@ database:
       memory: "256Mi"
 
   # Credenciais e Nomes (que virarão Secrets)
-  dbName: "food_delivery_db"
-  user: "food_user"
-  password: "food_pass"
+  dbName: "pede_rango_db"
+  user: "pede_rango_user"
+  password: "pede_rango_pass"

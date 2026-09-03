@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: food-delivery-db-pvc
+  name: pede-rango-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce
