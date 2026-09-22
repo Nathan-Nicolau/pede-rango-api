@@ -1,6 +1,7 @@
 package com.nathannicolau.fooddeliveryapi.service;
 
 import com.nathannicolau.fooddeliveryapi.domain.entregador.Entregador;
+import com.nathannicolau.fooddeliveryapi.domain.pedido.FormaPagamento;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.ItemPedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.Pedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido;
@@ -31,21 +32,28 @@ public class PedidoService {
     private final ClienteRepository clienteRepository;
     private final EntregadorRepository entregadorRepository;
     private final ProdutoRepository produtoRepository;
+    private final ConfiguracaoService configuracaoService;
 
     public PedidoService(
         PedidoRepository pedidoRepository,
         ClienteRepository clienteRepository,
         EntregadorRepository entregadorRepository,
-        ProdutoRepository produtoRepository
+        ProdutoRepository produtoRepository,
+        ConfiguracaoService configuracaoService
     ) {
         this.pedidoRepository = pedidoRepository;
         this.clienteRepository = clienteRepository;
         this.entregadorRepository = entregadorRepository;
         this.produtoRepository = produtoRepository;
+        this.configuracaoService = configuracaoService;
     }
 
     @Transactional
     public RespostaPedidoDTO criarPedido(CriarPedidoDTO dto) {
+        if (!configuracaoService.isOperacionalmenteAbertaHoje()) {
+            throw new RegraDeNegocioException("O estabelecimento está fechado para novos pedidos. As operações do dia ainda não foram iniciadas ou o expediente foi encerrado.");
+        }
+
         if (dto.itens() == null || dto.itens().isEmpty()) {
             throw new RegraDeNegocioException("O pedido deve conter pelo menos um item.");
         }
@@ -84,8 +92,8 @@ public class PedidoService {
         pedido.setNomeCliente(nomeCliente);
         pedido.setEnderecoEntrega(enderecoEntrega);
 
-        // 3. Processar itens do pedido
-        BigDecimal valorTotal = BigDecimal.ZERO;
+        // 3. Processar itens do pedido e calcular subtotal dos produtos
+        BigDecimal subtotalItens = BigDecimal.ZERO;
         for (CriarItemPedidoDTO itemDTO : dto.itens()) {
             ItemPedido item = new ItemPedido();
             String nomeItem = itemDTO.nome();
@@ -112,14 +120,35 @@ public class PedidoService {
             item.setNome(nomeItem);
             item.setQuantidade(itemDTO.quantidade() != null ? itemDTO.quantidade() : 1);
             item.setPrecoUnitario(precoItem);
+            item.setObservacao(itemDTO.observacao() != null && !itemDTO.observacao().isBlank() ? itemDTO.observacao().trim() : null);
 
             pedido.adicionarItem(item);
 
             BigDecimal subtotal = precoItem.multiply(BigDecimal.valueOf(item.getQuantidade()));
-            valorTotal = valorTotal.add(subtotal);
+            subtotalItens = subtotalItens.add(subtotal);
         }
 
+        // 4. Aplicar Taxa de Entrega Padrão Vigente e Calcular Valor Total
+        BigDecimal taxaEntrega = configuracaoService.obterTaxaEntregaPadrao();
+        pedido.setTaxaEntrega(taxaEntrega);
+        BigDecimal valorTotal = subtotalItens.add(taxaEntrega);
         pedido.setValorTotal(valorTotal);
+
+        // 5. Definir e validar forma de pagamento e troco
+        FormaPagamento formaPagamento = dto.formaPagamento() != null ? dto.formaPagamento() : FormaPagamento.DINHEIRO;
+        pedido.setFormaPagamento(formaPagamento);
+
+        if (formaPagamento == FormaPagamento.DINHEIRO && dto.trocoPara() != null) {
+            if (dto.trocoPara().compareTo(valorTotal) < 0) {
+                throw new RegraDeNegocioException(String.format(
+                    "O valor informado para troco (R$ %.2f) deve ser maior ou igual ao total do pedido com a entrega (R$ %.2f).",
+                    dto.trocoPara(), valorTotal
+                ));
+            }
+            pedido.setTrocoPara(dto.trocoPara());
+        } else {
+            pedido.setTrocoPara(null);
+        }
 
         // Gerar código sequencial de exibição comercial (PED-YYYYMMDD-XXXX)
         long proximaSequencia = pedidoRepository.count() + 1;
@@ -221,10 +250,6 @@ public class PedidoService {
 
         if (pedido.getStatus() == StatusPedido.ENTREGUE) {
             throw new RegraDeNegocioException("Não é possível cancelar um pedido que já foi entregue.");
-        }
-
-        if (pedido.getStatus() == StatusPedido.RECEBIDO) {
-            throw new RegraDeNegocioException("Não é possível cancelar um pedido no status RECEBIDO.");
         }
 
         pedido.cancelar(dto.motivo(), dto.observacoes());

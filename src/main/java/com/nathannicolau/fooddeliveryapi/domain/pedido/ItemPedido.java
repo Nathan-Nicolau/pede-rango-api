@@ -35,6 +35,9 @@ public class ItemPedido {
     @Column(name = "preco_unitario", nullable = false)
     private BigDecimal precoUnitario;
 
+    @Column(name = "observacao", length = 255)
+    private String observacao;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id")
     @JsonIgnore

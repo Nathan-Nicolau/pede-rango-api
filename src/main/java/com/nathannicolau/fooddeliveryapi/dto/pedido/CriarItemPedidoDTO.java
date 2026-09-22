@@ -8,5 +8,6 @@ public record CriarItemPedidoDTO(
     String nome,
     @Min(value = 1, message = "A quantidade deve ser de no mínimo 1")
     Integer quantidade,
-    BigDecimal precoUnitario
+    BigDecimal precoUnitario,
+    String observacao
 ) {}

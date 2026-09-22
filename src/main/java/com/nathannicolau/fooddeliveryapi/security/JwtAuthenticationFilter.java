@@ -18,13 +18,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.annotation.Lazy;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider tokenProvider;
     private final UsuarioRepository usuarioRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, UsuarioRepository usuarioRepository) {
+    public JwtAuthenticationFilter(JwtTokenProvider tokenProvider, @Lazy UsuarioRepository usuarioRepository) {
         this.tokenProvider = tokenProvider;
         this.usuarioRepository = usuarioRepository;
     }

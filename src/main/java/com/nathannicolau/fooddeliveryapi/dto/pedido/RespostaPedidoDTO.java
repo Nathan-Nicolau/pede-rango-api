@@ -1,5 +1,6 @@
 package com.nathannicolau.fooddeliveryapi.dto.pedido;
 
+import com.nathannicolau.fooddeliveryapi.domain.pedido.FormaPagamento;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.Pedido;
 import com.nathannicolau.fooddeliveryapi.domain.pedido.StatusPedido;
 
@@ -12,13 +13,19 @@ public record RespostaPedidoDTO(
     String codigo,
     Long clienteId,
     String nomeCliente,
+    String telefoneCliente,
     String enderecoEntrega,
     StatusPedido status,
+    FormaPagamento formaPagamento,
+    BigDecimal trocoPara,
+    BigDecimal taxaEntrega,
     Long entregadorId,
     String nomeEntregador,
+    String telefoneEntregador,
     BigDecimal valorTotal,
     List<RespostaItemPedidoDTO> itens,
     RespostaCancelamentoDTO cancelamento,
+    com.nathannicolau.fooddeliveryapi.dto.avaliacao.RespostaAvaliacaoDTO avaliacao,
     LocalDateTime criadoEm,
     LocalDateTime dataEntrega,
     LocalDateTime atualizadoEm
@@ -32,6 +39,10 @@ public record RespostaPedidoDTO(
             ? pedido.getEntregador().getUsuario().getNome()
             : null;
 
+        String telefoneEntregador = pedido.getEntregador() != null
+            ? pedido.getEntregador().getTelefone()
+            : null;
+
         Long entregadorId = pedido.getEntregador() != null
             ? pedido.getEntregador().getId()
             : null;
@@ -40,18 +51,28 @@ public record RespostaPedidoDTO(
             ? pedido.getCliente().getId()
             : null;
 
+        String telefoneCliente = pedido.getCliente() != null
+            ? pedido.getCliente().getTelefone()
+            : null;
+
         return new RespostaPedidoDTO(
             pedido.getId(),
             pedido.getCodigo(),
             clienteId,
             pedido.getNomeCliente(),
+            telefoneCliente,
             pedido.getEnderecoEntrega(),
             pedido.getStatus(),
+            pedido.getFormaPagamento(),
+            pedido.getTrocoPara(),
+            pedido.getTaxaEntrega() != null ? pedido.getTaxaEntrega() : BigDecimal.ZERO,
             entregadorId,
             nomeEntregador,
+            telefoneEntregador,
             pedido.getValorTotal(),
             itensDTO,
             RespostaCancelamentoDTO.daEntidade(pedido.getCancelamento()),
+            com.nathannicolau.fooddeliveryapi.dto.avaliacao.RespostaAvaliacaoDTO.daEntidade(pedido.getAvaliacao()),
             pedido.getCriadoEm(),
             pedido.getDataEntrega(),
             pedido.getAtualizadoEm()

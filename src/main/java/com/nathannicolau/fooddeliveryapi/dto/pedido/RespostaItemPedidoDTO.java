@@ -10,7 +10,8 @@ public record RespostaItemPedidoDTO(
     String nome,
     Integer quantidade,
     BigDecimal precoUnitario,
-    BigDecimal subtotal
+    BigDecimal subtotal,
+    String observacao
 ) {
     public static RespostaItemPedidoDTO daEntidade(ItemPedido item) {
         BigDecimal subtotal = item.getPrecoUnitario() != null && item.getQuantidade() != null
@@ -25,7 +26,8 @@ public record RespostaItemPedidoDTO(
             item.getNome(),
             item.getQuantidade(),
             item.getPrecoUnitario(),
-            subtotal
+            subtotal,
+            item.getObservacao()
         );
     }
 }

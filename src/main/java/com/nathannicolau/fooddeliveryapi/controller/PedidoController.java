@@ -23,9 +23,29 @@ import java.time.LocalDateTime;
 public class PedidoController {
 
     private final PedidoService pedidoService;
+    private final com.nathannicolau.fooddeliveryapi.service.AvaliacaoService avaliacaoService;
 
-    public PedidoController(PedidoService pedidoService) {
+    public PedidoController(PedidoService pedidoService,
+                            com.nathannicolau.fooddeliveryapi.service.AvaliacaoService avaliacaoService) {
         this.pedidoService = pedidoService;
+        this.avaliacaoService = avaliacaoService;
+    }
+
+    @PostMapping("/{codigoOuId}/avaliar")
+    public ResponseEntity<RespostaPedidoDTO> avaliarPedido(
+        @PathVariable String codigoOuId,
+        @RequestBody @Valid com.nathannicolau.fooddeliveryapi.dto.avaliacao.CriarAvaliacaoDTO dto
+    ) {
+        RespostaPedidoDTO resposta = avaliacaoService.avaliarPedido(codigoOuId, dto);
+        return ResponseEntity.ok(resposta);
+    }
+
+    @GetMapping("/{codigoOuId}/avaliacao")
+    public ResponseEntity<com.nathannicolau.fooddeliveryapi.dto.avaliacao.RespostaAvaliacaoDTO> buscarAvaliacao(
+        @PathVariable String codigoOuId
+    ) {
+        com.nathannicolau.fooddeliveryapi.dto.avaliacao.RespostaAvaliacaoDTO resposta = avaliacaoService.buscarPorPedido(codigoOuId);
+        return ResponseEntity.ok(resposta);
     }
 
     @PostMapping

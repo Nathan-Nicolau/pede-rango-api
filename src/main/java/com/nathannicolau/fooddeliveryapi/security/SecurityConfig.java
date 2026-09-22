@@ -48,6 +48,7 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/actuator/**"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/configuracoes").permitAll()
                 // Permite requisições pre-flight de CORS do navegador
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // TODOS os demais endpoints (pedidos, entregadores, etc.) exigem autenticação via Token JWT

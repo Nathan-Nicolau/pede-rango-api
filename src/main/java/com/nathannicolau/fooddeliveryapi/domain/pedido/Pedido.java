@@ -56,8 +56,21 @@ public class Pedido {
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
     private CancelamentoPedido cancelamento;
 
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private com.nathannicolau.fooddeliveryapi.domain.avaliacao.AvaliacaoPedido avaliacao;
+
+    @Column(name = "taxa_entrega", nullable = false)
+    private BigDecimal taxaEntrega = BigDecimal.ZERO;
+
     @Column(name = "valor_total", nullable = false)
     private BigDecimal valorTotal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma_pagamento", nullable = false, length = 50)
+    private FormaPagamento formaPagamento = FormaPagamento.DINHEIRO;
+
+    @Column(name = "troco_para")
+    private BigDecimal trocoPara;
 
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
