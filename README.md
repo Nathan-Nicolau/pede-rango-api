@@ -1,4 +1,4 @@
-# Food Delivery API
+# Pede Rango API
 
 Esse projeto de API, desenvolvido com Java 21 + Spring Boot, faz parte do teste técnico solicitado
 
