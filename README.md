@@ -63,9 +63,8 @@ docker compose up -d db
 ```
 
 **Opção 2 — Rodando tudo via Docker Compose:**
-Basta executar o comando abaixo na raiz do projeto, para que a imagem da API seja montada e o banco seja inicializado:
+Basta executar o comando abaixo na raiz do projeto, para que a API seja compilada (via Dockerfile multi-stage) e o banco seja inicializado:
 ```shell
-./mvnw clean package -DskipTests
 docker compose up -d --build
 ```
 
@@ -76,6 +75,16 @@ Com o cluster ativo (ver repositório `pede-rango-infra`), basta rodar:
 ```shell
 ./deploy-local.sh
 ```
+
+### Credenciais de Acesso Padrão
+Ao inicializar a aplicação, o Flyway já cria automaticamente os usuários abaixo para teste de cada perfil (a senha padrão para todos é **`123456`**):
+
+| Perfil | E-mail | Senha | Escopo |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@pederango.com` | `123456` | Acesso total, relatórios, configurações, usuários, entregadores e cardápio |
+| **Restaurante** | `restaurante@pederango.com` | `123456` | Gestão de expediente diário, fila de produção e status de itens do cardápio |
+| **Entregador** | `entregador@pederango.com` | `123456` | Fila de pedidos atribuídos e atualização de status de entrega |
+| **Cliente** | `cliente@pederango.com` | `123456` | Criação de pedidos, histórico, cancelamento e avaliação |
 
 ### Gitflow para versionamento
  - Criação de branchs para Desenvolvimento contínuo, simulando um cenário real.

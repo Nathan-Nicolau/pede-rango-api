@@ -5,8 +5,7 @@ CLUSTER_NAME="meu-cluster-local"
 IMAGE_TAG="v1"
 IMAGE_NAME="pede-rango-api:${IMAGE_TAG}"
 
-echo "🚀 [1/4] Compilando JAR e gerando imagem Docker '${IMAGE_NAME}'..."
-./mvnw clean package -DskipTests
+echo "🚀 [1/4] Compilando e gerando imagem Docker '${IMAGE_NAME}'..."
 docker build -t "${IMAGE_NAME}" .
 
 echo "📦 [2/4] Carregando imagem no cluster Kind via ctr..."

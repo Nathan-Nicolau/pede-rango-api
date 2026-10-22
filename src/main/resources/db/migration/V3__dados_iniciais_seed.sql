@@ -1,5 +1,5 @@
 -- =============================================================================
--- Seed de Dados Iniciais — Food Delivery API (Flyway V3)
+-- Seed de Dados Iniciais — Pede Rango API (Flyway V3)
 -- Senha padrão para todos os usuários: 123456
 -- Hash BCrypt de '123456': $2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm
 -- =============================================================================
