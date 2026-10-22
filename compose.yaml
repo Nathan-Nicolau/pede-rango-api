@@ -31,12 +31,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/pede_rango_db
       SPRING_DATASOURCE_USERNAME: pede_rango_user
       SPRING_DATASOURCE_PASSWORD: pede_rango_pass
-      SPRING_SQL_INIT_MODE: always
-      SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION: "true"
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   postgres_data:
-

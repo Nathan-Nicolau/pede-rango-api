@@ -1,12 +1,12 @@
 -- =============================================================================
---  Food Delivery API — Script de Primeiro Acesso
+--  Pede Rango API — Script de Primeiro Acesso
 --  Gerado em: 2026-08-03
 --
 --  COMO USAR (com o Docker rodando):
---    psql -h localhost -p 5433 -U food_user -d food_delivery_db -f seed_inicial.sql
+--    psql -h localhost -p 5433 -U pede_rango_user -d pede_rango_db -f seed_inicial.sql
 --
 --  Ou dentro do container:
---    docker exec -i food_delivery_db psql -U food_user -d food_delivery_db < seed_inicial.sql
+--    docker exec -i pede_rango_db psql -U pede_rango_user -d pede_rango_db < seed_inicial.sql
 --
 --  CREDENCIAIS DE ACESSO (senha padrão para todos: 123456)
 --  ┌──────────────────────────────────┬──────────────────────────────┬─────────────┐
@@ -33,9 +33,9 @@ RESTART IDENTITY CASCADE;
 -- Hash BCrypt de '123456': $2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em) VALUES
-    ('Administrador do Sistema',  'admin@pederango.com',         '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ADMIN',      TRUE, NOW(), NOW()),
-    ('Carlos Cliente',            'cliente@pederango.com',       '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'CLIENTE',    TRUE, NOW(), NOW()),
-    ('João Entregador',           'entregador@pederango.com',    '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ENTREGADOR', TRUE, NOW(), NOW());
+    ('Administrador do Sistema',  'admin@pederango.com',      '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ADMIN',      TRUE, NOW(), NOW()),
+    ('Carlos Cliente',            'cliente@pederango.com',    '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'CLIENTE',    TRUE, NOW(), NOW()),
+    ('João Entregador',           'entregador@pederango.com', '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm', 'ENTREGADOR', TRUE, NOW(), NOW());
 
 -- ─── 2. PERFIL CLIENTE ────────────────────────────────────────────────────────
 

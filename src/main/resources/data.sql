@@ -14,6 +14,13 @@ SELECT 'Administrador do Sistema',
 WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'admin@pederango.com');
 
 INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
+SELECT 'Restaurante / Cozinha',
+       'restaurante@pederango.com',
+       '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm',
+       'RESTAURANTE', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE email = 'restaurante@pederango.com');
+
+INSERT INTO usuarios (nome, email, senha, perfil, ativo, criado_em, atualizado_em)
 SELECT 'Carlos Cliente',
        'cliente@pederango.com',
        '$2a$10$bJZ21OzkEHrzzlPPt62HvuEqbMXzE5vMZYcwbhAoHwEgUG4gV0YMm',

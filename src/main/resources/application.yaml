@@ -20,13 +20,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    defer-datasource-initialization: true
 
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
 
 management:
   endpoints:

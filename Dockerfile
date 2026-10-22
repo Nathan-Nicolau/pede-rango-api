@@ -1,18 +1,12 @@
-# Multi-stage build for Spring Boot 3.4 (Java 21)
-
-# Stage 1: Build application JAR
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /app
 
-COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-RUN ./mvnw dependency:go-offline -B
-
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Runtime image
+RUN --mount=type=cache,target=/root/.m2 chmod +x mvnw && ./mvnw clean package -DskipTests -B
+
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 

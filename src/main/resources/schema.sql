@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS pedidos (
     nome_cliente VARCHAR(255) NOT NULL,
     endereco_entrega VARCHAR(255) NOT NULL,
     status VARCHAR(50) NOT NULL CHECK (status IN ('RECEBIDO', 'EM_PREPARO', 'PRONTO_PARA_ENTREGA', 'SAIU_PARA_ENTREGA', 'ENTREGUE', 'CANCELADO')),
+    forma_pagamento VARCHAR(50) NOT NULL DEFAULT 'DINHEIRO' CHECK (forma_pagamento IN ('DINHEIRO', 'PIX', 'CARTAO_CREDITO', 'CARTAO_DEBITO')),
+    troco_para NUMERIC(10,2),
     entregador_id BIGINT,
     valor_total NUMERIC(38,2) NOT NULL,
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -69,6 +71,7 @@ CREATE TABLE IF NOT EXISTS itens_pedido (
     nome VARCHAR(255) NOT NULL,
     quantidade INTEGER NOT NULL,
     preco_unitario NUMERIC(38,2) NOT NULL,
+    observacao VARCHAR(255),
     pedido_id BIGINT,
     FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE SET NULL,
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
@@ -83,7 +86,10 @@ CREATE TABLE IF NOT EXISTS cancelamentos_pedido (
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE
 );
 
--- Atualiza a constraint pedidos_status_check em bancos PostgreSQL existentes
+-- Atualiza a constraint pedidos_status_check e novas colunas em bancos PostgreSQL existentes
 ALTER TABLE pedidos DROP CONSTRAINT IF EXISTS pedidos_status_check;
 ALTER TABLE pedidos ADD CONSTRAINT pedidos_status_check CHECK (status IN ('RECEBIDO', 'EM_PREPARO', 'PRONTO_PARA_ENTREGA', 'SAIU_PARA_ENTREGA', 'ENTREGUE', 'CANCELADO'));
 ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS data_entrega TIMESTAMP;
+ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS forma_pagamento VARCHAR(50) NOT NULL DEFAULT 'DINHEIRO';
+ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS troco_para NUMERIC(10,2);
+ALTER TABLE itens_pedido ADD COLUMN IF NOT EXISTS observacao VARCHAR(255);
