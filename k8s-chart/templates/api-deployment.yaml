@@ -71,7 +71,3 @@ spec:
             secretKeyRef:
               name: pede-rango-secrets
               key: db-password
-        - name: SPRING_SQL_INIT_MODE
-          value: "always"
-        - name: SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION
-          value: "true"

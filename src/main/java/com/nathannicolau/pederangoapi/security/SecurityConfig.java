@@ -70,8 +70,6 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://app.pede-rango.local",
                 "http://api.pede-rango.local",
-                "http://app.food-delivery.local",
-                "http://api.food-delivery.local",
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost",
@@ -79,7 +77,6 @@ public class SecurityConfig {
         ));
         configuration.setAllowedOriginPatterns(List.of(
                 "http://*.pede-rango.local",
-                "http://*.food-delivery.local",
                 "http://*.nip.io",
                 "http://*.nip.io:*",
                 "http://192.168.*.*",
